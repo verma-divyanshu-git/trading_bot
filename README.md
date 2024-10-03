@@ -11,7 +11,7 @@ This is a basic trading bot simulation implemented in C++. It monitors stock pri
 
 ## Build Instructions
 ```bash
-g++ -std=c++17 -Iinclude src/*.cpp -o trading_bot
+g++ -std=c++17 -Iinclude -Iconfig src/*.cpp config/*.cpp -o trading_bot -lfmt -pthread
 ```
 
 ## Run the Application
