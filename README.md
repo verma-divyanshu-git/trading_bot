@@ -1,59 +1,82 @@
 # Trading Bot Simulation
 
 ## Overview
-This is a basic trading bot simulation implemented in C++. It monitors stock price fluctuations and executes trades based on predefined strategies (buy when the price drops by 2% and sell when it rises by 3%).
+This is a basic trading bot simulation implemented in C++. It monitors stock price fluctuations and executes trades based on predefined strategies, including dynamic strategy switching (e.g., buy when the price drops by 2% and sell when it rises by 3%).
 
 ## Components
-1. **StockAPI**: Simulates real-time stock prices using mock data.
-2. **TradeLogic**: Implements trading strategies based on price changes.
-3. **ProfitTracker**: Tracks the bot’s balance, held shares, and profit/loss.
-4. **Main**: The main execution loop for the bot.
+
+- **StockAPI**: Simulates real-time stock prices using mock data.
+- **TradingStrategy**: Implements trading strategies based on price changes, including:
+  - Threshold-based strategy
+  - Momentum trading
+  - Moving average crossover
+- **ProfitTracker**: Tracks the bot’s balance, held shares, and profit/loss.
+- **Main Execution Loop**: Handles strategy switching, trade execution, and profit/loss tracking.
 
 ## Build Instructions
-```bash
-g++ -std=c++17 -Iinclude -Iconfig src/*.cpp config/*.cpp -o trading_bot -lfmt -pthread
-```
 
+```bash 
+g++ -std=c++17 -Iinclude -Iconfig src/.cpp config/.cpp -o trading_bot -lfmt -pthread
+```
 ## Run the Application
+
 ```bash
 ./trading_bot
 ```
 
 ## Configuration
-1.  You can adjust thresholds (e.g., 2% buy, 3% sell) in trade_logic.cpp.
-2. Initial balance can be set in profit_tracker.cpp.
+You can adjust thresholds (e.g., 2% buy, 3% sell) in the environment variables.  
+The initial balance is set via environment variables or defaults to $10,000.
 
-## Environment Variables
+### Environment Variables
 
-The trading bot accepts several configurations via environment variables:
-
-- `BUY_THRESHOLD`: The percentage drop that triggers a "buy" action. Default is `0.02` (2%).
-- `SELL_THRESHOLD`: The percentage rise that triggers a "sell" action. Default is `0.03` (3%).
-- `INITIAL_BALANCE`: The initial cash balance the bot uses for trading. Default is `10000` ($10,000).
+- **BUY_THRESHOLD**: The percentage drop that triggers a "buy" action. Default is 0.02 (2%).
+- **SELL_THRESHOLD**: The percentage rise that triggers a "sell" action. Default is 0.03 (3%).
+- **INITIAL_BALANCE**: The initial cash balance the bot uses for trading. Default is 10000 ($10,000).
 
 ### Example usage
 
 ```bash
-export BUY_THRESHOLD=0.02
-export SELL_THRESHOLD=0.03
-export INITIAL_BALANCE=15000
+export BUY_THRESHOLD=0.02  
+export SELL_THRESHOLD=0.03  
+export INITIAL_BALANCE=15000  
 ./trading_bot
 ```
 
-## Evaluation Checklist
-1. **Code Quality**: The code is structured and well-commented, separating concerns into different modules.
-2. **Algorithm Implementation**: A basic trading strategy is implemented and can be easily extended for more complex strategies.
-3. **Backend Skills**: Proper use of C++ classes, threading, and random number generation to simulate market data.
-4. **Creativity**: Further improvements could include multiple trading strategies, advanced logging, or more sophisticated mock APIs.
+## Strategy Switching
+The bot dynamically switches between multiple trading strategies:
 
+- **Threshold Strategy**: Buys when the price drops by a percentage threshold and sells when it rises.
+- **Momentum Strategy**: Buys when prices are consistently increasing and sells when they start decreasing.
+- **Moving Average Crossover**: Buys when the short-term moving average crosses above the long-term moving average and sells when it crosses below.
 
-## Advanced Features:
-1. Multiple Trading Strategies: Add different strategies (e.g., momentum trading, moving averages, etc.) and allow the bot to switch between strategies dynamically.
-2. Risk Management: Implement basic risk management, such as limiting exposure (e.g., a maximum of 5 open positions at once).
-3. Logging: Introduce a logging mechanism to store trades and decisions for later analysis.
-4. Analytics: Track additional metrics like win/loss ratios, average trade return, and maximum drawdown.
-5. Stop-Loss/Take-Profit: Add stop-loss and take-profit mechanisms to protect profits or limit losses.
+The strategy switching is done dynamically based on predefined rules (switching strategies every 20 price ticks).
 
+## Logging and Analytics
 
+- **Logging**: The bot logs all buy, sell, and hold actions to a log file (`trading_bot.log`) along with timestamps and prices.
+- **Analytics**: At the end of the trading session, the bot outputs detailed analytics, including:
+  - Total profit
+  - Average profit per trade
+  - Number of winning and losing trades
+  - Win/Loss ratio
 
-### This structure can be expanded or customized depending on the needs of the trading bot or the complexity of the simulation.
+## Example Log Output
+Each trading session generates a log file (`trading_bot.log`) that records actions such as buying, selling, and holding at specific price points.
+
+```bash
+Buying at $96.3154  
+Selling at $99.0136  
+Holding at $95.9171  
+```
+...
+
+The final balance and analytics summary are printed at the end of the session.
+
+## Advanced Features
+
+- **Multiple Trading Strategies**: The bot can switch between multiple strategies (momentum trading, moving averages, threshold-based) dynamically based on market conditions or predefined criteria.
+- **Logging & Analytics**: Detailed logs of trading actions and performance analytics, including win/loss ratio and total profits.
+
+## Conclusion
+This structure is modular and can be easily extended for additional trading strategies or improved analytics, depending on the needs of the trading bot or the complexity of the simulation.
