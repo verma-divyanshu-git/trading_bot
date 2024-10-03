@@ -1,12 +1,15 @@
 #include "stock_api.h"
-#include "trade_logic.h"
 #include "profit_tracker.h"
 #include "env_config.h"
+#include "threshold_strategy.h"
+#include "momentum_strategy.h"
+#include "moving_average_strategy.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/basic_file_sink.h"
+#include <memory>
 
 int main()
 {
@@ -20,8 +23,10 @@ int main()
     double initialBalance = EnvConfig::getEnvDouble("INITIAL_BALANCE", 10000.0); // Default: $10,000
 
     StockAPI stockAPI;
-    TradeLogic tradeLogic(buyThreshold, sellThreshold); // Buy on 2% drop, sell on 3% rise
-    ProfitTracker profitTracker(initialBalance);        // Start with $10,000
+    ProfitTracker profitTracker(initialBalance);
+
+    // Create strategy objects
+    std::unique_ptr<TradingStrategy> strategy = std::make_unique<ThresholdStrategy>(buyThreshold, sellThreshold);
 
     double previousPrice = stockAPI.getPrice();
 
@@ -30,8 +35,22 @@ int main()
         // Simulate 100 price ticks
         stockAPI.simulatePriceMovement();
         double currentPrice = stockAPI.getPrice();
-        TradeAction action = tradeLogic.decide(currentPrice, previousPrice);
 
+        // Dynamic strategy switching based on some condition (e.g., every 20 iterations)
+        if (i == 20)
+        {
+            strategy = std::make_unique<MomentumStrategy>(5); // Switch to Momentum Strategy
+            logger->info("Switched to Momentum Strategy");
+        }
+
+        else if (i == 50)
+        {
+            strategy = std::make_unique<MovingAverageStrategy>(5, 10); // Switch to Moving Average Strategy
+            logger->info("Switched to Moving Average Strategy");
+        }
+
+        TradeAction action = strategy->decide(currentPrice, previousPrice);
+        
         switch (action)
         {
         case TradeAction::BUY:
