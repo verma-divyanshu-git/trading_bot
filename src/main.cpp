@@ -1,16 +1,20 @@
-// main.cpp
 #include "stock_api.h"
 #include "trade_logic.h"
 #include "profit_tracker.h"
+#include "env_config.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
 
 int main()
 {
+    double buyThreshold = EnvConfig::getEnvDouble("BUY_THRESHOLD", 0.02);        // Default: 2% drop
+    double sellThreshold = EnvConfig::getEnvDouble("SELL_THRESHOLD", 0.03);      // Default: 3% rise
+    double initialBalance = EnvConfig::getEnvDouble("INITIAL_BALANCE", 10000.0); // Default: $10,000
+
     StockAPI stockAPI;
-    TradeLogic tradeLogic(0.02, 0.03);  // Buy on 2% drop, sell on 3% rise
-    ProfitTracker profitTracker(10000); // Start with $10,000
+    TradeLogic tradeLogic(buyThreshold, sellThreshold); // Buy on 2% drop, sell on 3% rise
+    ProfitTracker profitTracker(initialBalance);        // Start with $10,000
 
     double previousPrice = stockAPI.getPrice();
 
