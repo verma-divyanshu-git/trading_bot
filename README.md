@@ -67,9 +67,9 @@ Each trading session generates a log file (`trading_bot.log`) that records actio
 ```bash
 Buying at $96.3154  
 Selling at $99.0136  
-Holding at $95.9171  
+Holding at $95.9171 
+... 
 ```
-...
 
 The final balance and analytics summary are printed at the end of the session.
 
